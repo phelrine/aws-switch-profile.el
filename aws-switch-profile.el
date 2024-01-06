@@ -88,7 +88,17 @@
               (role-session-name (or (gethash "role_session_name" profile) aws-switch-profile-aws-role-session-name))
               (duration-seconds 3600))
           (aws-switch-profile--set-env-vars
-           (aws-switch-profile--get-session-info source-profile role-arn role-session-name duration-seconds mfa-serial mfa-code)))))))
+           (aws-switch-profile--get-session-info source-profile role-arn role-session-name duration-seconds mfa-serial mfa-code))
+          (message "Switched to AWS profile: %s" profile-name))))))
+
+(defun aws-switch-profile-clear-aws-session ()
+  "Clear AWS session environment variables to revert to the default credentials."
+  (interactive)
+  (setenv "AWS_PROFILE" nil)
+  (setenv "AWS_ACCESS_KEY_ID" nil)
+  (setenv "AWS_SECRET_ACCESS_KEY" nil)
+  (setenv "AWS_SESSION_TOKEN" nil)
+  (message "AWS session variables cleared, reverted to default credentials."))
 
 (provide 'aws-switch-profile)
 
