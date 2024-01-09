@@ -32,7 +32,6 @@
 
 (defun aws-switch-profile--parse-config ()
   "Parse the AWS config file and extract profiles information."
-  (interactive)
   (when (file-readable-p aws-switch-profile-aws-config-file)
     (with-temp-buffer
       (insert-file-contents aws-switch-profile-aws-config-file)
@@ -74,6 +73,7 @@
         (mfa-params (when mfa-serial (format "--serial-number %s --token-code %s" mfa-serial mfa-code))))
     (json-read-from-string (shell-command-to-string (if mfa-params (concat cmd " " mfa-params) cmd)))))
 
+;;;###autoload
 (defun aws-switch-profile ()
   "Switch AWS IAM role and set environment variables."
   (interactive)
@@ -91,6 +91,7 @@
            (aws-switch-profile--get-session-info source-profile role-arn role-session-name duration-seconds mfa-serial mfa-code))
           (message "Switched to AWS profile: %s" profile-name))))))
 
+;;;###autoload
 (defun aws-switch-profile-clear-aws-session ()
   "Clear AWS session environment variables to revert to the default credentials."
   (interactive)
