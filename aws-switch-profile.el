@@ -130,6 +130,13 @@ If the credentials are expired or don't exist, return nil."
   "Switch AWS IAM role and set environment variables."
   (interactive)
   (let* ((profiles (aws-switch-profile--filter-profiles (aws-switch-profile--parse-config)))
+         (max-profile-name-length (apply #'max (mapcar (lambda (p) (length (car p))) profiles)))
+         (profile-annotation-function
+          (lambda (profile)
+            (let* ((padding-size (- (+ max-profile-name-length (mod max-profile-name-length 32)) (length profile)))
+                   (padding (make-string padding-size ?\s)))
+              (concat padding (gethash "role_arn" (cdr (assoc profile profiles)))))))
+         (completion-extra-properties `(:annotation-function ,profile-annotation-function :category "variable"))
          (profile-name (completing-read "Select an AWS profile: " (mapcar #'car profiles)))
          (profile (cdr (assoc profile-name profiles))))
     (pcase-let ((`(,role-arn ,source-profile ,mfa-serial)
